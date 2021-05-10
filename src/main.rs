@@ -55,17 +55,20 @@ fn main() -> Result<(), String> {
 	let mut dest_rect_2 = Rect::new(0, 64, sprite_tile_size.0 * 4, sprite_tile_size.0 * 4);
 	dest_rect_2.center_on(Point::new(440, 360));
 
-	let mut running = true;
-	while running {
+	let mut use_original_framerate = true;
+
+	'running: loop {
 		for event in event_pump.poll_iter() {
 			match event {
 				Event::Quit { .. }
 				| Event::KeyDown {
 					keycode: Some(Keycode::Escape),
 					..
-				} => {
-					running = false;
-				}
+				} => break 'running,
+				Event::KeyDown {
+					keycode: Some(Keycode::F),
+					..
+				} => use_original_framerate = !use_original_framerate,
 				_ => {}
 			}
 		}
@@ -111,9 +114,14 @@ fn main() -> Result<(), String> {
 			false,
 			false,
 		)?;
+
 		canvas.present();
 
-		std::thread::sleep(Duration::from_millis(100));
+		if use_original_framerate {
+			std::thread::sleep(Duration::from_millis(100));
+		} else {
+			std::thread::sleep(Duration::new(0, 1_000_000_000u32 / 60));
+		}
 	}
 
 	Ok(())
