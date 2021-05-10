@@ -5,24 +5,21 @@ use sdl2::{
 };
 
 pub struct Sprite {
-	frames: i32,
+	tile_size: (u32, u32),
+	frames: u32,
 	source_rect: Rect,
 	dest_rect: Rect,
 }
 
 impl Sprite {
-	pub fn new(origin: (i32, i32), tile_size: (u32, u32), frames: i32, center: Point) -> Sprite {
+	pub fn new(origin: (i32, i32), tile_size: (u32, u32), frames: u32, center: Point) -> Sprite {
 		let source_rect = Rect::new(0, 0, tile_size.0, tile_size.1);
 
-		let mut dest_rect = Rect::new(
-			origin.0,
-			origin.1,
-			tile_size.0 * (frames as u32),
-			tile_size.1 * (frames as u32),
-		);
+		let mut dest_rect = Rect::new(origin.0, origin.1, tile_size.0 * frames, tile_size.1 * frames);
 		dest_rect.center_on(center);
 
 		Sprite {
+			tile_size,
 			frames,
 			source_rect,
 			dest_rect,
@@ -30,8 +27,12 @@ impl Sprite {
 	}
 
 	pub fn update(&mut self, ticks: i32) {
-		// set the current frame for time
-		self.source_rect.set_x(32 * ((ticks / 100) % self.frames));
+		// animate sprite sheet
+		let speed = 100;
+		self.source_rect
+			.set_x((self.tile_size.0 as i32) * ((ticks / speed) % self.frames as i32));
+
+		// glide across the screen
 		self.dest_rect.set_x(((ticks / 14) % 768) - 128);
 	}
 

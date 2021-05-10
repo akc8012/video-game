@@ -78,10 +78,10 @@ fn main() -> Result<(), String> {
 		// set the current frame for time
 		baby.update(ticks);
 
-		source_rect_1.set_x(32 * ((ticks / 100) % frames_per_anim));
+		source_rect_1.set_x(32 * ((ticks / 100) % frames_per_anim as i32));
 		dest_rect_1.set_x(-(((ticks / 12) % 768) - 672));
 
-		source_rect_2.set_x(32 * ((ticks / 100) % frames_per_anim));
+		source_rect_2.set_x(32 * ((ticks / 100) % frames_per_anim as i32));
 		dest_rect_2.set_x(((ticks / 10) % 768) - 128);
 
 		canvas.clear();
