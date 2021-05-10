@@ -78,6 +78,7 @@ fn main() -> Result<(), String> {
 		// set the current frame for time
 		baby.update(ticks);
 
+		// TODO: Update with closure / anonymous function so I don't have to worry about this crap
 		source_rect_1.set_x(32 * ((ticks / 100) % frames_per_anim as i32));
 		dest_rect_1.set_x(-(((ticks / 12) % 768) - 672));
 
