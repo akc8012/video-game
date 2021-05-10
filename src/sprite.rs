@@ -28,9 +28,8 @@ impl Sprite {
 
 	pub fn update(&mut self, ticks: i32) {
 		// animate sprite sheet
-		let speed = 100;
 		self.source_rect
-			.set_x((self.tile_size.0 as i32) * ((ticks / speed) % self.frames as i32));
+			.set_x((self.tile_size.0 as i32) * ((ticks / 100) % self.frames as i32));
 
 		// glide across the screen
 		self.dest_rect.set_x(((ticks / 14) % 768) - 128);
