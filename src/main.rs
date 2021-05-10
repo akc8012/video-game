@@ -7,6 +7,9 @@ use sdl2::rect::Point;
 use sdl2::rect::Rect;
 use std::time::Duration;
 
+use sprite::Sprite;
+mod sprite;
+
 fn main() -> Result<(), String> {
 	let sdl_context = sdl2::init()?;
 	let video_subsystem = sdl_context.video()?;
@@ -40,10 +43,7 @@ fn main() -> Result<(), String> {
 	let frames_per_anim = 4;
 	let sprite_tile_size = (32, 32);
 
-	// Baby - walk animation
-	let mut source_rect_0 = Rect::new(0, 0, sprite_tile_size.0, sprite_tile_size.0);
-	let mut dest_rect_0 = Rect::new(0, 0, sprite_tile_size.0 * 4, sprite_tile_size.0 * 4);
-	dest_rect_0.center_on(Point::new(-64, 120));
+	let mut baby = Sprite::new((0, 0), sprite_tile_size, frames_per_anim, Point::new(-64, 120));
 
 	// King - walk animation
 	let mut source_rect_1 = Rect::new(0, 32, sprite_tile_size.0, sprite_tile_size.0);
@@ -76,8 +76,7 @@ fn main() -> Result<(), String> {
 		let ticks = timer.ticks() as i32;
 
 		// set the current frame for time
-		source_rect_0.set_x(32 * ((ticks / 100) % frames_per_anim));
-		dest_rect_0.set_x(((ticks / 14) % 768) - 128);
+		baby.update(ticks);
 
 		source_rect_1.set_x(32 * ((ticks / 100) % frames_per_anim));
 		dest_rect_1.set_x(-(((ticks / 12) % 768) - 672));
@@ -87,15 +86,8 @@ fn main() -> Result<(), String> {
 
 		canvas.clear();
 		// copy the frame to the canvas
-		canvas.copy_ex(
-			&texture,
-			Some(source_rect_0),
-			Some(dest_rect_0),
-			0.0,
-			None,
-			false,
-			false,
-		)?;
+		baby.draw(&texture, &mut canvas)?;
+
 		canvas.copy_ex(
 			&texture,
 			Some(source_rect_1),
