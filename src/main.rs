@@ -1,12 +1,11 @@
 extern crate sdl2;
-use std::path::Path;
 
+use game::Game;
 use sdl2::event::Event;
 use sdl2::keyboard::Keycode;
-use sdl2::rect::Point;
 use std::time::Duration;
 
-use sprite::Sprite;
+mod game;
 mod sprite;
 
 fn main() -> Result<(), String> {
@@ -19,7 +18,7 @@ fn main() -> Result<(), String> {
 		.build()
 		.map_err(|e| e.to_string())?;
 
-	let mut canvas = window
+	let mut canvas: sdl2::render::Canvas<sdl2::video::Window> = window
 		.into_canvas()
 		.accelerated()
 		.build()
@@ -31,22 +30,9 @@ fn main() -> Result<(), String> {
 	let timer = sdl_context.timer()?;
 
 	let mut event_pump = sdl_context.event_pump()?;
-
-	// animation sheet and extras are available from
-	// https://opengameart.org/content/a-platformer-in-the-forest
-	let temp_surface = sdl2::surface::Surface::load_bmp(Path::new("assets/characters.bmp"))?;
-	let texture = texture_creator
-		.create_texture_from_surface(&temp_surface)
-		.map_err(|e| e.to_string())?;
-
-	let frames_per_anim = 4;
-	let sprite_tile_size = (32, 32);
-
-	let mut baby = Sprite::new((0, 0), sprite_tile_size, frames_per_anim, Point::new(-64, 120));
-	let mut king = Sprite::new((0, 32), sprite_tile_size, frames_per_anim, Point::new(0, 240));
-	let mut soldier = Sprite::new((0, 64), sprite_tile_size, frames_per_anim, Point::new(440, 360));
-
 	let mut use_original_framerate = true;
+
+	let mut game = Game::start(&texture_creator)?;
 
 	'running: loop {
 		for event in event_pump.poll_iter() {
@@ -65,16 +51,10 @@ fn main() -> Result<(), String> {
 		}
 
 		let ticks = timer.ticks() as i32;
-
-		baby.update(ticks, ((ticks / 14) % 768) - 128);
-		king.update(ticks, -(((ticks / 12) % 768) - 672));
-		soldier.update(ticks, ((ticks / 10) % 768) - 128);
+		game.update(ticks);
 
 		canvas.clear();
-
-		baby.draw(&texture, false, &mut canvas)?;
-		king.draw(&texture, true, &mut canvas)?;
-		soldier.draw(&texture, false, &mut canvas)?;
+		game.draw(&mut canvas)?;
 
 		canvas.present();
 
