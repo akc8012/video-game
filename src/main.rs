@@ -4,7 +4,6 @@ use std::path::Path;
 use sdl2::event::Event;
 use sdl2::keyboard::Keycode;
 use sdl2::rect::Point;
-use sdl2::rect::Rect;
 use std::time::Duration;
 
 use sprite::Sprite;
@@ -44,16 +43,8 @@ fn main() -> Result<(), String> {
 	let sprite_tile_size = (32, 32);
 
 	let mut baby = Sprite::new((0, 0), sprite_tile_size, frames_per_anim, Point::new(-64, 120));
-
-	// King - walk animation
-	let mut source_rect_1 = Rect::new(0, 32, sprite_tile_size.0, sprite_tile_size.0);
-	let mut dest_rect_1 = Rect::new(0, 32, sprite_tile_size.0 * 4, sprite_tile_size.0 * 4);
-	dest_rect_1.center_on(Point::new(0, 240));
-
-	// Soldier - walk animation
-	let mut source_rect_2 = Rect::new(0, 64, sprite_tile_size.0, sprite_tile_size.0);
-	let mut dest_rect_2 = Rect::new(0, 64, sprite_tile_size.0 * 4, sprite_tile_size.0 * 4);
-	dest_rect_2.center_on(Point::new(440, 360));
+	let mut king = Sprite::new((0, 32), sprite_tile_size, frames_per_anim, Point::new(0, 240));
+	let mut soldier = Sprite::new((0, 64), sprite_tile_size, frames_per_anim, Point::new(440, 360));
 
 	let mut use_original_framerate = true;
 
@@ -75,37 +66,15 @@ fn main() -> Result<(), String> {
 
 		let ticks = timer.ticks() as i32;
 
-		// set the current frame for time
 		baby.update(ticks, ((ticks / 14) % 768) - 128);
-
-		source_rect_1.set_x(32 * ((ticks / 100) % frames_per_anim as i32));
-		dest_rect_1.set_x(-(((ticks / 12) % 768) - 672));
-
-		source_rect_2.set_x(32 * ((ticks / 100) % frames_per_anim as i32));
-		dest_rect_2.set_x(((ticks / 10) % 768) - 128);
+		king.update(ticks, -(((ticks / 12) % 768) - 672));
+		soldier.update(ticks, ((ticks / 10) % 768) - 128);
 
 		canvas.clear();
-		// copy the frame to the canvas
-		baby.draw(&texture, &mut canvas)?;
 
-		canvas.copy_ex(
-			&texture,
-			Some(source_rect_1),
-			Some(dest_rect_1),
-			0.0,
-			None,
-			true,
-			false,
-		)?;
-		canvas.copy_ex(
-			&texture,
-			Some(source_rect_2),
-			Some(dest_rect_2),
-			0.0,
-			None,
-			false,
-			false,
-		)?;
+		baby.draw(&texture, false, &mut canvas)?;
+		king.draw(&texture, true, &mut canvas)?;
+		soldier.draw(&texture, false, &mut canvas)?;
 
 		canvas.present();
 

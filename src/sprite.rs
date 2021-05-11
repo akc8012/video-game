@@ -34,7 +34,12 @@ impl Sprite {
 		self.dest_rect.set_x(x_position);
 	}
 
-	pub fn draw(&self, texture: &Texture, canvas: &mut Canvas<Window>) -> Result<(), String> {
+	pub fn draw(
+		&self,
+		texture: &Texture,
+		flip_horizontal: bool,
+		canvas: &mut Canvas<Window>,
+	) -> Result<(), String> {
 		// copy the frame to the canvas
 		canvas.copy_ex(
 			texture,
@@ -42,7 +47,7 @@ impl Sprite {
 			Some(self.dest_rect),
 			0.0,
 			None,
-			false,
+			flip_horizontal,
 			false,
 		)
 	}
