@@ -25,14 +25,11 @@ fn main() -> Result<(), String> {
 		.map_err(|e| e.to_string())?;
 	let texture_creator = canvas.texture_creator();
 
-	canvas.set_draw_color(sdl2::pixels::Color::RGBA(0, 0, 0, 255));
-
 	let timer = sdl_context.timer()?;
-
 	let mut event_pump = sdl_context.event_pump()?;
 	let mut use_original_framerate = true;
 
-	let mut game = Game::start(&texture_creator)?;
+	let mut game = Game::start(&mut canvas, &texture_creator)?;
 
 	'running: loop {
 		for event in event_pump.poll_iter() {

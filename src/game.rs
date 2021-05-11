@@ -18,7 +18,10 @@ pub struct Game<'a> {
 }
 
 impl<'a> Game<'a> {
-	pub fn start(texture_creator: &'a TextureCreator<WindowContext>) -> Result<Game<'a>, String> {
+	pub fn start(
+		canvas: &mut Canvas<Window>,
+		texture_creator: &'a TextureCreator<WindowContext>,
+	) -> Result<Game<'a>, String> {
 		// animation sheet and extras are available from
 		// https://opengameart.org/content/a-platformer-in-the-forest
 		let surface = surface::Surface::load_bmp(Path::new("assets/characters.bmp"))?;
@@ -32,6 +35,8 @@ impl<'a> Game<'a> {
 		let baby = Sprite::new((0, 0), tile_size, frames, Point::new(-64, 120));
 		let king = Sprite::new((0, 32), tile_size, frames, Point::new(0, 240));
 		let soldier = Sprite::new((0, 64), tile_size, frames, Point::new(440, 360));
+
+		canvas.set_draw_color(sdl2::pixels::Color::RGBA(0, 0, 0, 255));
 
 		Ok(Game {
 			texture,
