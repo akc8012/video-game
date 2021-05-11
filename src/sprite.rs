@@ -13,8 +13,7 @@ pub struct Sprite {
 
 impl Sprite {
 	pub fn new(origin: (i32, i32), tile_size: (u32, u32), frames: u32, center: Point) -> Sprite {
-		let source_rect = Rect::new(0, 0, tile_size.0, tile_size.1);
-
+		let source_rect = Rect::new(origin.0, origin.1, tile_size.0, tile_size.1);
 		let mut dest_rect = Rect::new(origin.0, origin.1, tile_size.0 * frames, tile_size.1 * frames);
 		dest_rect.center_on(center);
 
@@ -26,13 +25,13 @@ impl Sprite {
 		}
 	}
 
-	pub fn update(&mut self, ticks: i32) {
+	pub fn update(&mut self, ticks: i32, x_position: i32) {
 		// animate sprite sheet
 		self.source_rect
 			.set_x((self.tile_size.0 as i32) * ((ticks / 100) % self.frames as i32));
 
 		// glide across the screen
-		self.dest_rect.set_x(((ticks / 14) % 768) - 128);
+		self.dest_rect.set_x(x_position);
 	}
 
 	pub fn draw(&self, texture: &Texture, canvas: &mut Canvas<Window>) -> Result<(), String> {
