@@ -1,11 +1,13 @@
 extern crate sdl2;
 
 use game::Game;
+use input::InputCore;
 use sdl2::event::Event;
 use sdl2::keyboard::Keycode;
-use std::{collections::HashSet, time::Duration};
+use std::time::Duration;
 
 mod game;
+mod input;
 mod sprite;
 
 fn main() -> Result<(), String> {
@@ -30,7 +32,7 @@ fn main() -> Result<(), String> {
 	let mut use_original_framerate = true;
 
 	let mut game = Game::start(&mut canvas, &texture_creator)?;
-	let mut last_keys = HashSet::new();
+	let mut input_core = InputCore::new();
 
 	'running: loop {
 		for event in events.poll_iter() {
@@ -48,28 +50,14 @@ fn main() -> Result<(), String> {
 			}
 		}
 
-		// Create a set of pressed Keys.
-		let keys = events
-			.keyboard_state()
-			.pressed_scancodes()
-			.filter_map(Keycode::from_scancode)
-			.collect();
-
-		// Get the difference between the new and old sets.
-		let new_keys = &keys - &last_keys;
-		let old_keys = &last_keys - &keys;
-
-		if !new_keys.is_empty() || !old_keys.is_empty() {
-			println!("new_keys: {:?}\told_keys:{:?}", new_keys, old_keys);
-		}
-
+		input_core.update(&events);
 		game.update(timer.ticks() as i32);
 
 		canvas.clear();
 		game.draw(&mut canvas)?;
 
 		canvas.present();
-		last_keys = keys;
+		input_core.refresh_keys();
 
 		if use_original_framerate {
 			std::thread::sleep(Duration::from_millis(100));
