@@ -1,8 +1,33 @@
 use sdl2::{keyboard::Keycode, EventPump};
-use std::collections::HashSet;
+use std::{collections::HashSet, ops::Index};
+
+static TRUE: bool = true;
+static FALSE: bool = false;
+
+pub struct Input<'a> {
+	input_core: &'a InputCore,
+}
+
+impl<'a> Input<'a> {
+	pub fn new(input_core: &'a InputCore) -> Input<'a> {
+		Input { input_core }
+	}
+}
+
+impl<'a> Index<&Keycode> for Input<'a> {
+	type Output = bool;
+
+	fn index(&self, index: &Keycode) -> &Self::Output {
+		if self.input_core.keys.contains(index) {
+			&TRUE
+		} else {
+			&FALSE
+		}
+	}
+}
 
 pub struct InputCore {
-	keys: HashSet<Keycode>,
+	pub keys: HashSet<Keycode>,
 	last_keys: HashSet<Keycode>,
 }
 
